@@ -20,6 +20,9 @@ private:
     int revents_;
     int idx_;
 
+    std::weak_ptr<void> tie_;
+    bool tied_;
+
     tinyserver::ReadEventCallback readCallback_;
     tinyserver::EventCallback writeCallback_;
     tinyserver::EventCallback closeCallback_;
@@ -36,6 +39,8 @@ public:
     void setWriteCallback(EventCallback cb){writeCallback_ = std::move(cb);};
     void setCloseCallback(EventCallback cb){closeCallback_ = std::move(cb);};
     void setErrorCallback(EventCallback cb){errorCallback_ = std::move(cb);};
+
+    void tie(const std::shared_ptr<void> &obj);
 
     int getFd() const {return fd_;};
     int getEvents() const {return events_;};

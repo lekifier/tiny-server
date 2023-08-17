@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <mutex>
 #include <sys/eventfd.h>
 
 #include <event/nio/Poller.hpp>

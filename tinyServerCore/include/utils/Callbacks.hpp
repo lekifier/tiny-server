@@ -16,7 +16,7 @@ namespace tinyserver
     using CloseCallback = std::function<void(const TcpConnectionPtr&)>;
     using WriteCompleteCallback = std::function<void(const TcpConnectionPtr&)>;
     using HighWaterMarkCallback = std::function<void(const TcpConnectionPtr&, size_t)>;
-    using MessageCallback = std::function<void(const TcpConnectionPtr&, Buffer*, ssize_t)>;
+    using MessageCallback = std::function<void(const TcpConnectionPtr&, Buffer*)>;
 
     using EventCallback = std::function<void()>;
     using ReadEventCallback = std::function<void()>;

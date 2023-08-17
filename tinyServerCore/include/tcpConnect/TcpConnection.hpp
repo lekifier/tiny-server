@@ -13,7 +13,7 @@
 
 namespace tinyserver
 {
-class TcpConnection : noncopyable
+class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnection>
 {
 private:
     enum class StateE 
@@ -59,6 +59,7 @@ public:
                   const tinyserver::InetAddress& localAddr, const tinyserver::InetAddress& peerAddr);
     ~TcpConnection();
 
+    // getter
     tinyserver::Reactor* getReactor() const { return reactor_; }
     const std::string& getName() const { return name_; }
     const tinyserver::InetAddress& getLocalAddr() const { return localAddr_; }
@@ -67,6 +68,7 @@ public:
     bool connected() const { return state_ == StateE::kConnected; }
     bool disconnected() const { return state_ == StateE::kDisconnected; }
 
+    // setter
     void setConnectionCallback(const tinyserver::ConnectionCallback& cb) { connectionCallback_ = cb; }
     void setMessageCallback(const tinyserver::MessageCallback& cb) { messageCallback_ = cb; }
     void setWriteCompleteCallback(const tinyserver::WriteCompleteCallback& cb) { writeCompleteCallback_ = cb; }

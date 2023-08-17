@@ -1,4 +1,6 @@
 #pragma once
+
+#include <semaphore.h>
 #include <thread>
 #include <memory>
 #include <thread/CurrentThread.hpp>
@@ -7,6 +9,8 @@
 namespace tinyserver
 {
 
+
+static int numCreated_;
 class Thread
 {
 private:
@@ -16,7 +20,6 @@ private:
     bool joined_;
     std::shared_ptr<std::thread> thread_;
     ThreadFunc func_;
-    static int numCreated_;
 
     void setDefalutName();
 
