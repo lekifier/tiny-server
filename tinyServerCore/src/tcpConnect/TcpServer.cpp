@@ -1,5 +1,5 @@
 #include <tcpConnect/TcpServer.hpp>
-
+#include <iostream>
 namespace tinyserver
 {
 TcpServer::TcpServer(Reactor* reactor,
@@ -9,13 +9,15 @@ TcpServer::TcpServer(Reactor* reactor,
     : reactor_(reactor),
       name_(nameArg),
       ipPort_(listenAddr.toIpPort()),
-      acceptor_(std::make_unique<Acceptor>(reactor, listenAddr, option == Option::kReusePort)),
-      threadInitCallback_([](Reactor*){}),
-      connectionCallback_([](const TcpConnectionPtr&){}),
-      messageCallback_([](const TcpConnectionPtr&, Buffer*){}),
-      writeCompleteCallback_([](const TcpConnectionPtr&){})
+      acceptor_(new Acceptor(reactor, listenAddr, option == Option::kReusePort)),
+      threadPool_(new ReactorThreadPool(reactor, name_)),
+      connectionCallback_(),
+      messageCallback_(),
+      nextConnId_(1),
+      started_(false)
 {
-    acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, std::placeholders::_1, std::placeholders::_2));
+    acceptor_->setNewConnectionCallback(
+        std::bind(&TcpServer::newConnection, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 TcpServer::~TcpServer()
@@ -54,9 +56,9 @@ void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
     ::memset(&local, 0, sizeof(local));
     socklen_t addrlen = static_cast<socklen_t>(sizeof(local));
     InetAddress localAddr(local);
-    TcpConnectionPtr conn = std::make_shared<TcpConnection>(
+    TcpConnectionPtr conn(new TcpConnection(
                                 reactor_, connName,
-                                sockfd, localAddr, peerAddr);
+                                sockfd, localAddr, peerAddr));
     connections_[connName] = conn;
     conn->setConnectionCallback(connectionCallback_);
     conn->setMessageCallback(messageCallback_);

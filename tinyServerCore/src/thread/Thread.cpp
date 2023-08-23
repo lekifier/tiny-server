@@ -2,6 +2,8 @@
 
 namespace tinyserver
 {
+std::atomic<int> Thread::numCreated_(0);
+
 Thread::Thread(ThreadFunc func, const std::string &name)
     : started_(false),
       joined_(false),
@@ -24,9 +26,11 @@ void Thread::start()
 {
     started_ = true;
     sem_t sem;
+    sem_init(&sem, false, 0);
     thread_ = std::shared_ptr<std::thread>(new std::thread([&](){
         tid_ = CurrentThread::tid();
         sem_post(&sem);
+        func_();
     }));
 
     sem_wait(&sem);

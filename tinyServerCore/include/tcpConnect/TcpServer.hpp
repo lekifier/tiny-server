@@ -19,6 +19,7 @@ private:
     std::shared_ptr<ReactorThreadPool> threadPool_;
 
     ThreadInitCallback threadInitCallback_;
+
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
     WriteCompleteCallback writeCompleteCallback_;
@@ -61,6 +62,8 @@ public:
     {
         writeCompleteCallback_ = cb;
     }
+    std::string getIpPort() const { return ipPort_; }
+    std::string getServerName() const { return name_; }
     void setThreadNum(int numThreads);
     void start();
 };  

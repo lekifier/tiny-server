@@ -6,6 +6,7 @@
 #include <event/Reactor.hpp>
 #include <thread/ReactorThread.hpp>
 #include <utils/Callbacks.hpp>
+#include <utils/Containers.hpp>
 
 namespace tinyserver
 {
@@ -18,8 +19,8 @@ private:
     bool started_;
     int numThreads_;
     int next_;
-    std::vector<std::unique_ptr<ReactorThread>> threads_;
-    std::vector<Reactor *> reactors_;
+    ThreadList threads_;
+    ReactorList reactors_;
 public:
     ReactorThreadPool(Reactor *masterReactor, const std::string &name);
     ~ReactorThreadPool();

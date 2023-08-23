@@ -4,6 +4,7 @@ thread_local tinyserver::Reactor* t_reactorInThisThread = nullptr;
 
 namespace tinyserver
 {
+const int kPollTimeMs = 10000;
 int createEventfd()
 {
     int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
@@ -18,7 +19,7 @@ Reactor::Reactor()
     : threadId_(CurrentThread::tid()),
       running_(false),
       quit_(false),
-      poller_(),
+      poller_(new EpollPoller(this)),
       wakeupFd_(createEventfd()),
       wakeupChannel_(new Channel(this, wakeupFd_))
 {
@@ -47,7 +48,7 @@ void Reactor::loop()
     while (!quit_)
     {
         activeChannels_.clear();
-        poller_->poll(-1, &activeChannels_);
+        poller_->poll(kPollTimeMs, &activeChannels_);
         for (auto channel : activeChannels_)
         {
             channel->handleEvent();

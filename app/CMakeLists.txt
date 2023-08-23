@@ -1,5 +1,5 @@
-file(GLOB_RECURSE srcs CONFIGURE_DEPENDS src/*.cpp include/*.hpp)
-add_executable(app ${srcs})
-target_include_directories(app PUBLIC include)
+add_executable(server src/server/server.cpp)
+target_include_directories(server PUBLIC include)
+target_link_libraries(server PUBLIC tinyServerCore)
 
-target_link_libraries(app PUBLIC tinyServerCore)
+add_executable(client src/client/client.cpp)

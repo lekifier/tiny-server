@@ -1,5 +1,5 @@
 #include <thread/ReactorThreadPool.hpp>
-
+#include <iostream>
 namespace tinyserver
 {
 ReactorThreadPool::ReactorThreadPool(Reactor *masterReactor, const std::string &name)
@@ -20,6 +20,9 @@ void ReactorThreadPool::start(const tinyserver::ThreadInitCallback &cb) {
         ReactorThread *t = new ReactorThread(cb, buf);
         threads_.push_back(std::unique_ptr<ReactorThread>(t));
         reactors_.push_back(t->start());
+    }
+    if (numThreads_ == 0 && cb) {
+        cb(masterReactor_);
     }
 }
 

@@ -13,24 +13,28 @@ private:
         }
     }
     void onMessage(const tinyserver::TcpConnectionPtr &conn, tinyserver::Buffer *buf){
-        std::cout << "onMessage(): received " << " bytes from connection [" << conn->getName() << "]" << std::endl;
+        std::cout << "onMessage(): received from connection [" << conn->getName() << "]" << std::endl;
         conn->send(buf->retrieveAllAsString());
     }
 public:
     EchoServer(tinyserver::Reactor *reactor, const tinyserver::InetAddress &addr)
-        : reactor_(reactor), server_(reactor, addr, "EchoServer"){
+        : reactor_(reactor),
+          server_(reactor, addr, "EchoServer")
+    {
         server_.setConnectionCallback(
             std::bind(&EchoServer::onConnection, this, std::placeholders::_1));
         server_.setMessageCallback(
             std::bind(&EchoServer::onMessage, this, std::placeholders::_1, std::placeholders::_2));
+        server_.setThreadNum(4);
     }
     void start(){
+        std::cout << "Start" << server_.getServerName() << " at " << server_.getIpPort() << std::endl;
         server_.start();
     }
 };
 int main(){
     tinyserver::Reactor reactor;
-    tinyserver::InetAddress addr(12345);
+    tinyserver::InetAddress addr(12345, "0.0.0.0");
     EchoServer server(&reactor, addr);
     server.start();
     reactor.loop();
